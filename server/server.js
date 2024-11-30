@@ -4,9 +4,13 @@ import dotenv from "dotenv";
 import connectMongoDB from "./dbconnect/connect.js";
 
 dotenv.config();
+
 const app = express();
+app.use(express.json()); //middleware
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authroutes);
+
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
