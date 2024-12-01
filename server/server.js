@@ -3,6 +3,7 @@ import authroutes from "./routes/routes.auth.js";
 import dotenv from "dotenv";
 import connectMongoDB from "./dbconnect/connect.js";
 import cookieParser from "cookie-parser";
+import userroutes from "./routes/users.routes.js";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: true })); //not necessary unless u intend
 app.use(cookieParser()); //to check your cookies
 
 app.use("/api/auth", authroutes);
+app.use("/api/users", userroutes);
 
 const PORT = process.env.PORT;
 
