@@ -58,16 +58,14 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    console.log("here1");
-    const { email, password } = req.body;
-    const user = await TwitterUser.findOne({ email });
-    console.log(user);
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user?.password || "",
-    );
-    if (!user || !isPasswordCorrect) {
-      return res.status(400).json({ error: "Invalid username or password" });
+    const { username, password } = req.body;
+    const user = await TwitterUser.findOne({ username: username });
+    if (!user) {
+      return res.status(400).json({ error: " Invalid User" });
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ error: "Invalid password" });
     }
     //generating token
     generateTokenAndSetCookie(user._id, res);
@@ -83,12 +81,28 @@ export const login = async (req, res) => {
       coverImg: user.coverImg,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
 export const logout = async (req, res) => {
-  res.json({
-    data: "you hit the signup endpoint",
-  });
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged Out" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const authedUser = async (req, res) => {
+  try {
+    console.log(req.body);
+    const user = await TwitterUser.findById(req.user._id).select("-password");
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };

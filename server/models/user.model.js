@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const twitteruserSchema = new mongoose.Schema(
   {
     //add userName unique check
     username: {
@@ -57,6 +57,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const TwitterUser = mongoose.model("TwitterUser", userSchema);
+const TwitterUser = mongoose.model("TwitterUser", twitteruserSchema);
 
 export default TwitterUser;
