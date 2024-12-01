@@ -7,7 +7,7 @@ export const protectedRoute = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ error: "No valid token found" });
     }
-    const decoded = jwt.verify(token, process.env.SECRET_KEY); //decoding the token
+    const decoded = jwt.verify(token, process.env.SECRET_KEY); //decoding the token,verify is the method from package jsonwebtoken
     if (!decoded) {
       return res.status(401).json({ error: "Invalid token" });
     }
@@ -16,7 +16,6 @@ export const protectedRoute = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
     req.user = user;
-    console.log("end of protected route");
     next();
   } catch (error) {
     console.log(error.message);

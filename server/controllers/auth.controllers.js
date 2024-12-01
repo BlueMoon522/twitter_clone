@@ -6,35 +6,34 @@ import TwitterUser from "../models/user.model.js";
 export const signup = async (req, res) => {
   try {
     console.log("here1");
-    const { fullname, username, email, password } = req.body;
-    const existingUser = await TwitterUser.findOne({ username });
+    const { fullname, username, email, password } = req.body; //req.body is the one we send as request.Then addding all of the parameters to the request.
+    const existingUser = await TwitterUser.findOne({ username }); //finding the username from above passed "username", and searching based on username
     if (existingUser) {
       return res.status(400).json({ error: "Username taken" });
     }
-    const existingEmail = await TwitterUser.findOne({ email });
+    const existingEmail = await TwitterUser.findOne({ email }); //checking for email using same method as above
     if (existingEmail) {
       return res.status(400).json({ error: "Email taken" });
     }
     console.log("Here");
     //hashing password
+    //encryption of the password using bcrypt required salt,so generating salt of length 10,increasing it more will create more secure password but also take more time to encrypt
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     console.log(hashedPassword);
+    //creating a newUser using the TwitterUser Model
     const newUser = new TwitterUser({
       fullname,
       username,
       email,
       password: hashedPassword,
     });
-    console.log(newUser);
+    //if creating as newUser is a success
     if (newUser) {
       //generating token
-      console.log("Now setting cookie and generating ofcourse");
       generateTokenAndSetCookie(newUser._id, res);
-      console.log("after the function");
-      console.log(newUser);
-      await newUser.save();
-      console.log("User saved");
+      await newUser.save(); //save the newUser to the DB using the save(). method
+      //sending all of the following info as json as a Response(not necessary)
       res.status(201).json({
         _id: newUser._id,
         fullname: newUser.fullname,
@@ -45,7 +44,6 @@ export const signup = async (req, res) => {
         profileImg: newUser.profileImg,
         coverImg: newUser.coverImg,
       });
-      console.log("After");
     } else {
       res.status(400).json({
         error: "Invalid User Data",
@@ -56,20 +54,22 @@ export const signup = async (req, res) => {
   }
 };
 
+//Login route
 export const login = async (req, res) => {
   try {
+    //taking the username and password that is  passed as a request
     const { username, password } = req.body;
-    const user = await TwitterUser.findOne({ username: username });
+    const user = await TwitterUser.findOne({ username: username }); //searching for username
     if (!user) {
       return res.status(400).json({ error: " Invalid User" });
     }
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password); //compare is a function provided by bcrypt,helps in comparing the currently passed password to the already encrypted password
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: "Invalid password" });
     }
-    //generating token
+    //generating token on successful login
     generateTokenAndSetCookie(user._id, res);
-    console.log("after the function");
+    //passing data as response(not necessary)
     res.status(201).json({
       _id: user._id,
       fullname: user.fullname,
@@ -88,6 +88,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    //setting cookie jwt to maxage of 0 on press and value to null
     res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged Out" });
   } catch (error) {
@@ -98,7 +99,7 @@ export const logout = async (req, res) => {
 
 export const authedUser = async (req, res) => {
   try {
-    console.log(req.body);
+    //finding user according to their id and removing the password from the json
     const user = await TwitterUser.findById(req.user._id).select("-password");
     res.status(200).json(user);
   } catch (error) {
