@@ -48,6 +48,14 @@ const twitteruserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    likedPost: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+        default: [],
+      },
+    ],
+
     //add minimum password to be 8
     password: {
       type: String,
