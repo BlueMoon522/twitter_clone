@@ -7,6 +7,8 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
   //for form data
@@ -17,19 +19,41 @@ const SignUpPage = () => {
     password: "",
   });
 
+  const { mutate, isError, isPending, error } = useMutation({
+    mutationFn: async ({ email, username, fullname, password }) => {
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, username, fullname, password }),
+        });
+        if (!res.ok) {
+          throw new Error("Something went wrong");
+        }
+        const data = await res.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        console.log(data);
+        return data;
+      } catch (error) {
+        toast.error(error.message);
+      }
+    },
+  });
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    //printing out the form data
-    console.log(formData);
+    e.preventDefault(); //page doesnot reload if u preventDefault;
+    //passsing out the form data
+    mutate(formData);
   };
 
   const handleInputChange = (e) => {
     //setting form data on this function call
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  //default error is null so set to false
-  const isError = false;
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-10">
@@ -101,7 +125,7 @@ const SignUpPage = () => {
             />
           </label>
           <button className="btn rounded-full btn-primary text-white">
-            Sign up
+            {isPending ? "Loading" : "signup"}
           </button>
           {/*Set error to true if error*/}
           {isError && <p className="text-red-500">Something went wrong</p>}

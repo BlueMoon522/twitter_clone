@@ -7,6 +7,7 @@ import userroutes from "./routes/users.routes.js";
 import { v2 as cloudinary } from "cloudinary";
 import postroutes from "./routes/posts.routes.js";
 import notificationroutes from "./routes/notifications.routes.js";
+import cors from "cors";
 dotenv.config();
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -15,6 +16,12 @@ cloudinary.config({
 });
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true, //to send and receive cookie
+  })
+);
 app.use(express.json()); //middleware for using jsons
 app.use(express.urlencoded({ extended: true })); //not necessary unless u intend to pass info thorugh urlencoded method
 app.use(cookieParser()); //to check your cookies

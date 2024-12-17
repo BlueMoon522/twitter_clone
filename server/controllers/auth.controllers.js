@@ -5,7 +5,6 @@ import TwitterUser from "../models/user.model.js";
 //signup route
 export const signup = async (req, res) => {
   try {
-    console.log("here1");
     const { fullname, username, email, password } = req.body; //req.body is the one we send as request.Then addding all of the parameters to the request.
     const existingUser = await TwitterUser.findOne({ username }); //finding the username from above passed "username", and searching based on username
     if (existingUser) {
@@ -15,7 +14,7 @@ export const signup = async (req, res) => {
     if (existingEmail) {
       return res.status(400).json({ error: "Email taken" });
     }
-    console.log("Here");
+
     //hashing password
     //encryption of the password using bcrypt required salt,so generating salt of length 10,increasing it more will create more secure password but also take more time to encrypt
     const salt = await bcrypt.genSalt(10);
@@ -34,6 +33,9 @@ export const signup = async (req, res) => {
       generateTokenAndSetCookie(newUser._id, res);
       await newUser.save(); //save the newUser to the DB using the save(). method
       //sending all of the following info as json as a Response(not necessary)
+      console.log("====================================");
+      console.log("Sending status 201 next");
+      console.log("====================================");
       res.status(201).json({
         _id: newUser._id,
         fullname: newUser.fullname,
