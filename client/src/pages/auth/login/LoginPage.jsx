@@ -5,23 +5,59 @@ import XSvg from "../../../components/svgs/X";
 
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: Login,
+    isError,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: async ({ username, password }) => {
+      console.log("LoginFunction Main Entered");
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        console.log("Data was checked");
+        if (!res.ok) {
+          throw new Error("Something went wrong");
+        }
+        const data = await res.json();
+        console.log("Data was submitted");
+        if (!res.ok) throw new Error(data.error || "Something went wrong");
+        console.log(data);
+        return data;
+      } catch (error) {
+        toast.error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Login successFul");
+      //get userData
+      queryClient.invalidateQueries({ queryKey: ["authuser"] });
+    },
+  });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    Login(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const isError = false;
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen">
@@ -56,7 +92,7 @@ const LoginPage = () => {
             />
           </label>
           <button className="btn rounded-full btn-primary text-white">
-            Login
+            {isPending ? "Loading..." : "Login"}
           </button>
           {isError && <p className="text-red-500">Something went wrong</p>}
         </form>

@@ -15,12 +15,13 @@ const SignUpPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
-    fullName: "",
+    fullname: "",
     password: "",
   });
 
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: async ({ email, username, fullname, password }) => {
+      console.log("Data was created?");
       try {
         const res = await fetch("/api/auth/signup", {
           method: "POST",
@@ -29,18 +30,21 @@ const SignUpPage = () => {
           },
           body: JSON.stringify({ email, username, fullname, password }),
         });
+        console.log("Data was created1");
         if (!res.ok) {
           throw new Error("Something went wrong");
         }
         const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        console.log("Data was created!");
+        if (!res.ok) throw new Error(data.error || "Failed to create account");
         console.log(data);
         return data;
       } catch (error) {
         toast.error(error.message);
       }
+    },
+    onSuccess: () => {
+      toast.success("user created successfully");
     },
   });
 
@@ -61,8 +65,8 @@ const SignUpPage = () => {
         <XSvg className=" lg:w-2/3 fill-white" />
       </div>
       <div className="flex-1 flex flex-col justify-center items-center">
-        {/*
-          Form
+        {" "}
+        {/* Form
           -Label:email
           -Label:username
           -Label:fullname
@@ -85,7 +89,6 @@ const SignUpPage = () => {
               onChange={handleInputChange}
               value={formData.email}
             />
-            {/*Fist label of the form i.e userName,set type to email to point to the userName of the formdata*/}
           </label>
           <div className="flex gap-4 flex-wrap">
             <label className="input input-bordered rounded flex items-center gap-2 flex-1">
@@ -99,16 +102,16 @@ const SignUpPage = () => {
                 value={formData.username}
               />
             </label>
-            {/*Fist label of the form i.e fullName,set type to email to point to the fullname of the formdata*/}
             <label className="input input-bordered rounded flex items-center gap-2 flex-1">
               <MdDriveFileRenameOutline />
+              {/*Sets the value to fullname from this field*/}
               <input
                 type="text"
                 className="grow"
                 placeholder="Full Name"
-                name="fullName"
+                name="fullname"
                 onChange={handleInputChange}
-                value={formData.fullName}
+                value={formData.fullname}
               />
             </label>
           </div>
