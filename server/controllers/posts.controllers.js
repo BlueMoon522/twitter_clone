@@ -23,6 +23,11 @@ export const createPost = async (req, res) => {
       const uploadedResponse = await cloudinary.uploader.upload(img);
       //sending the img as string i.e url to the database
       img = uploadedResponse.secure_url;
+      console.log("yes image");
+      console.log(img);
+      console.log("Here is image image");
+    } else {
+      console.log("no image");
     }
 
     const newPost = Post({
@@ -76,7 +81,7 @@ export const likePost = async (req, res) => {
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       await TwitterUser.updateOne(
         { _id: userId },
-        { $pull: { likedPost: postId } },
+        { $pull: { likedPost: postId } }
       );
       res.status(200).json({ message: "Post unliked" });
     } else {
@@ -85,7 +90,7 @@ export const likePost = async (req, res) => {
       post.likes.push(userId);
       await TwitterUser.updateOne(
         { _id: userId },
-        { $push: { likedPost: postId } },
+        { $push: { likedPost: postId } }
       );
       await post.save();
       console.log("did it");

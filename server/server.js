@@ -22,14 +22,15 @@ app.use(
     credentials: true, //to send and receive cookie
   })
 );
-app.use(express.json()); //middleware for using jsons
+//dont have limit to high,it can be used for DoS attacks
+app.use(express.json({ limit: "5mb" })); //middleware for using jsons
 app.use(express.urlencoded({ extended: true })); //not necessary unless u intend to pass info thorugh urlencoded method
 app.use(cookieParser()); //to check your cookies
 
 app.use("/api/auth", authroutes);
 app.use("/api/users", userroutes);
 app.use("/api/post", postroutes);
-app.use(".api.notificaiton", notificationroutes);
+app.use("/api/notificaiton", notificationroutes);
 
 const PORT = process.env.PORT;
 
