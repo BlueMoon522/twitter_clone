@@ -10,7 +10,7 @@ import {
 const router = express();
 
 router.get("/profile/:username", protectedRoute, userProfiles);
-router.get("/follow/:id", protectedRoute, followAndUnfollow);
+router.post("/follow/:id", protectedRoute, followAndUnfollow);
 router.post("/update", protectedRoute, updateProfile);
 router.get("/suggested", protectedRoute, suggested);
 
