@@ -80,7 +80,6 @@ export const followAndUnfollow = async (req, res) => {
 export const suggested = async (req, res) => {
   try {
     const userId = req.user._id;
-    jjjjjjj;
     const userFollowed = await TwitterUser.findById(userId).select("following");
 
     //TODO: Look into aggregate function
@@ -95,7 +94,7 @@ export const suggested = async (req, res) => {
 
     //filtering the users by checking if the users are followed or not followed already
     const filteredUsers = users.filter(
-      (user) => !userFollowed.following.includes(user._id),
+      (user) => !userFollowed.following.includes(user._id)
     );
     //setting the suggestedUsers to be between 0-4
     const suggestedUsers = filteredUsers.slice(0, 4);
@@ -104,7 +103,8 @@ export const suggested = async (req, res) => {
     suggestedUsers.forEach((user) => (user.password = null));
 
     //send the json of suggested users list
-    res.status(200).json({ suggestedUsers });
+    //if u want to use map send if like this dont send it like ({suggestedUsers}) or u will get an error
+    res.status(200).json(suggestedUsers);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
@@ -140,7 +140,7 @@ export const updateProfile = async (req, res) => {
       if (user.profileImg) {
         //deleting the old profile image
         await cloudinary.uploader.destroy(
-          user.profileImg.split("/").pop().split(".")[0],
+          user.profileImg.split("/").pop().split(".")[0]
         );
       }
       const uploadedResponse = await cloudinary.uploader.upload(profileImg);
@@ -151,7 +151,7 @@ export const updateProfile = async (req, res) => {
       if (user.coverImg) {
         //deleting the old cover image
         await cloudinary.uploader.destroy(
-          user.coverImg.split("/").pop().split(".")[0],
+          user.coverImg.split("/").pop().split(".")[0]
         );
       }
       const uploadedResponse = await cloudinary.uploader.upload(coverImg);
