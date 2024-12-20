@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/posts", postRoutes);
+app.use("/api/post", postRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 if (process.env.NODE_ENV === "production") {
