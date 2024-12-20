@@ -12,7 +12,7 @@ const useFollow = () => {
         });
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.message || "Something is wrong");
+          throw new Error(data.error || "Something is wrong");
         }
         return data;
       } catch (error) {
@@ -22,7 +22,7 @@ const useFollow = () => {
     onSuccess: () => {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["suggestedUsers"] }),
-        queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+        queryClient.invalidateQueries({ queryKey: ["authuser"] }),
       ]);
     },
     onError: (error) => {

@@ -30,7 +30,7 @@ app.use(cookieParser()); //to check your cookies
 app.use("/api/auth", authroutes);
 app.use("/api/users", userroutes);
 app.use("/api/post", postroutes);
-app.use("/api/notificaiton", notificationroutes);
+app.use("/api/notifications", notificationroutes);
 
 const PORT = process.env.PORT;
 

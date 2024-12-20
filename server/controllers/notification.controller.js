@@ -1,17 +1,17 @@
 //needs to be tested!!Untested
 import Notification from "../models/notifications.model.js";
-//receive notifcations
-export const getNotification = async () => {
+//receive notifications
+export const getNotification = async (req, res) => {
   try {
     const userId = req.user._id;
-    const notifcations = await Notification.find({
+    const notifications = await Notification.find({
       to: userId,
     }).populate({
       path: "from",
       select: "username profileImg",
     });
     await Notification.updateMany({ to: userId }, { read: true });
-    res.status(200).json(notifcations);
+    res.status(200).json(notifications);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "internal error" });
@@ -19,7 +19,7 @@ export const getNotification = async () => {
 };
 //this deletes all notifications
 //add one to delete single notifications TODO
-export const deleteNotification = async () => {
+export const deleteNotification = async (req, res) => {
   try {
     const userId = req.user._id;
     await Notification.deleteMany({ to: userId });
