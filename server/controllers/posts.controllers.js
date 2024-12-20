@@ -81,16 +81,19 @@ export const likePost = async (req, res) => {
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       await TwitterUser.updateOne(
         { _id: userId },
-        { $pull: { likedPost: postId } }
+        { $pull: { likedPost: postId } },
       );
-      res.status(200).json({ message: "Post unliked" });
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== userId.toString(),
+      );
+      res.status(200).json(updatedLikes);
     } else {
       //like if uid ,doesnot exists
       console.log("here");
       post.likes.push(userId);
       await TwitterUser.updateOne(
         { _id: userId },
-        { $push: { likedPost: postId } }
+        { $push: { likedPost: postId } },
       );
       await post.save();
       console.log("did it");
@@ -100,9 +103,10 @@ export const likePost = async (req, res) => {
         type: "like",
       });
       await notification.save();
-      res.status(200).json({ message: "Post liked successful" });
+      const updatedLikes = post.likes;
+      res.status(200).json(updatedLikes);
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 //commentPost

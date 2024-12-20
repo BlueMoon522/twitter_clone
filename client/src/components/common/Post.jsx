@@ -8,6 +8,7 @@ import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatPostDate } from "../../utils/date";
 
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
@@ -17,7 +18,8 @@ const Post = ({ post }) => {
   //if it is my post/logged in persons post
   const isMyPost = authUser._id == post.user._id;
 
-  const { mutate: deletePost, isPending } = useMutation({
+  //to delete the post
+  const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
       try {
         const res = await fetch(`/api/post/${post._id}`, {
@@ -40,21 +42,85 @@ const Post = ({ post }) => {
   });
 
   const postOwner = post.user;
-  const isLiked = false;
-  //check if the post if of the currently logged in user or not?
-  const formattedDate = "1h";
 
-  const isCommenting = false;
+  const isLiked = post.likes.includes(authUser._id);
+
+  //function for like
+  const { mutate: likePost, isPending: isLiking } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch(`/api/post/like/${post._id}`, {
+          method: "POST",
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Something is wrong");
+        }
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    onSuccess: (updatedLikes) => {
+      //not good way to do it
+      // queryClient.invalidateQueries({ queryKey: ["posts"] });
+      // updating the cache for that post instead
+      queryClient.setQueryData(["posts"], (oldData) => {
+        return oldData.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, likes: updatedLikes };
+          }
+          return p;
+        });
+      });
+    },
+  });
+
+  //get the posted Date of the post
+  const formattedDate = formatPostDate(post.createdAt);
+
+  //function for comment
+
+  const { mutate: commentPost, isPending: isCommenting } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch(`/api/post/comment/${post._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: comment }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Something is wrong");
+        }
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    onSuccess: () => {
+      toast.success(" Commented");
+      setComment("");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
   const handleDeletePost = () => {
     deletePost();
   };
 
   const handlePostComment = (e) => {
     e.preventDefault();
+    if (isCommenting) return;
+    commentPost();
   };
 
-  const handleLikePost = () => {};
-
+  const handleLikePost = () => {
+    if (isLiking) return;
+    likePost();
+  };
+  isLiking;
   return (
     <>
       <div className="flex gap-2 items-start p-4 border-b border-gray-700">
@@ -80,13 +146,13 @@ const Post = ({ post }) => {
             </span>
             {isMyPost && (
               <span className="flex justify-end flex-1">
-                {!isPending && (
+                {!isDeleting && (
                   <FaTrash
                     className="cursor-pointer hover:text-red-500"
                     onClick={handleDeletePost}
                   />
                 )}
-                {isPending && <LoadingSpinner size="sm" />}
+                {isDeleting && <LoadingSpinner size="sm" />}
               </span>
             )}
           </div>
@@ -187,10 +253,11 @@ const Post = ({ post }) => {
                 className="flex gap-1 items-center group cursor-pointer"
                 onClick={handleLikePost}
               >
-                {!isLiked && (
+                {isLiking && <LoadingSpinner size="sm" />}
+                {!isLiked && !isLiking && (
                   <FaRegHeart className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
                 )}
-                {isLiked && (
+                {isLiked && !isLiking && (
                   <FaRegHeart className="w-4 h-4 cursor-pointer text-pink-500 " />
                 )}
 
