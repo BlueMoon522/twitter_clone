@@ -5,9 +5,9 @@ import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from "cloudinary";
 
 import authRoutes from "./routes/routes.auth.js";
-import userRoutes from "./routes/users.route.js";
-import postRoutes from "./routes/posts.route.js";
-import notificationRoutes from "./routes/notification.route.js";
+import userRoutes from "./routes/users.routes.js";
+import postRoutes from "./routes/posts.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 import connectMongoDB from "./db/connect.js";
 
