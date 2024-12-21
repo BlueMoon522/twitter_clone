@@ -4,6 +4,7 @@ import TwitterUser from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
 //get all the currentUser info
 export const userProfiles = async (req, res) => {
+  console.log("In user profile function");
   const { username } = req.params;
   try {
     const user = await TwitterUser.findOne({ username }).select("-password");
@@ -18,6 +19,7 @@ export const userProfiles = async (req, res) => {
 };
 //Follow and unfollow other users
 export const followAndUnfollow = async (req, res) => {
+  console.log("In follow unfollow function");
   try {
     const { id } = req.params;
     const userToModify = await TwitterUser.findById(id);
@@ -78,6 +80,7 @@ export const followAndUnfollow = async (req, res) => {
 //get suggested users
 //can be better
 export const suggested = async (req, res) => {
+  console.log("In suggested function");
   try {
     const userId = req.user._id;
     const userFollowed = await TwitterUser.findById(userId).select("following");
@@ -111,6 +114,7 @@ export const suggested = async (req, res) => {
   }
 };
 export const updateProfile = async (req, res) => {
+  console.log("In updateUser function");
   let { fullname, email, username, currentPassword, newPassword, bio, link } =
     req.body;
   let { profileImg, coverImg } = req.body;

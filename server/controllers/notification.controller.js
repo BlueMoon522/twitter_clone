@@ -2,6 +2,7 @@
 import Notification from "../models/notifications.model.js";
 //receive notifications
 export const getNotification = async (req, res) => {
+  console.log("In get notification function");
   try {
     const userId = req.user._id;
     const notifications = await Notification.find({
@@ -20,6 +21,7 @@ export const getNotification = async (req, res) => {
 //this deletes all notifications
 //add one to delete single notifications TODO
 export const deleteNotification = async (req, res) => {
+  console.log("In delete notification function");
   try {
     const userId = req.user._id;
     await Notification.deleteMany({ to: userId });

@@ -4,6 +4,7 @@ import TwitterUser from "../models/user.model.js";
 
 //signup route
 export const signup = async (req, res) => {
+  console.log("In signup function");
   try {
     const { fullname, username, email, password } = req.body; //req.body is the one we send as request.Then addding all of the parameters to the request.
     const existingUser = await TwitterUser.findOne({ username }); //finding the username from above passed "username", and searching based on username
@@ -19,7 +20,6 @@ export const signup = async (req, res) => {
     //encryption of the password using bcrypt required salt,so generating salt of length 10,increasing it more will create more secure password but also take more time to encrypt
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(hashedPassword);
     //creating a newUser using the TwitterUser Model
     const newUser = new TwitterUser({
       fullname,
@@ -58,6 +58,7 @@ export const signup = async (req, res) => {
 
 //Login route
 export const login = async (req, res) => {
+  console.log("In login function");
   try {
     //taking the username and password that is  passed as a request
     const { username, password } = req.body;
@@ -89,6 +90,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+  console.log("In logout function");
   try {
     //setting cookie jwt to maxage of 0 on press and value to null
     res.cookie("jwt", "", { maxAge: 0 });
@@ -100,6 +102,7 @@ export const logout = async (req, res) => {
 };
 
 export const authedUser = async (req, res) => {
+  console.log("In authUser function");
   try {
     //finding user according to their id and removing the password from the json
     const user = await TwitterUser.findById(req.user._id).select("-password");

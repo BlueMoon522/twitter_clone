@@ -7,7 +7,7 @@
     "dev": "NODE_ENV=development && nodemon server/server.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client",
     "start": "NODE_ENV=production  node server/server.js",
-    "dev start": "nodemon server/server.js"
+    "run": "nodemon server/server.js"
   },
   "keywords": [],
   "author": "",

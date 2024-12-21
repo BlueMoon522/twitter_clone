@@ -7,9 +7,10 @@ import { v2 as cloudinary } from "cloudinary";
 import authRoutes from "./routes/routes.auth.js";
 import userRoutes from "./routes/users.routes.js";
 import postRoutes from "./routes/posts.routes.js";
-import notificationRoutes from "./routes/notification.routes.js";
+import notificationRoutes from "./routes/notifications.routes.js";
 
-import connectMongoDB from "./db/connect.js";
+import connectMongoDB from "./dbconnect/connect.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -21,6 +22,12 @@ cloudinary.config({
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Allow only your frontend's origin
+    credentials: true, // If sending cookies or authorization headers
+  })
+);
 const __dirname = path.resolve();
 
 app.use(express.json({ limit: "5mb" })); // to parse req.body
@@ -45,4 +52,5 @@ if (process.env.NODE_ENV === "production") {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   connectMongoDB();
+  console.log("Mongo Connected");
 });

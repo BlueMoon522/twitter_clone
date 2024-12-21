@@ -41,7 +41,7 @@ const LoginPage = () => {
         console.log(data);
         return data;
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error);
       }
     },
     onSuccess: () => {

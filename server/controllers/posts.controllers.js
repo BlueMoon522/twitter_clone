@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 //create a post
 export const createPost = async (req, res) => {
+  console.log("In create post function");
   try {
     //getting image or text from the user
     const { text } = req.body;
@@ -45,6 +46,7 @@ export const createPost = async (req, res) => {
 
 //delete route
 export const deletePost = async (req, res) => {
+  console.log("In delete function");
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
@@ -67,6 +69,7 @@ export const deletePost = async (req, res) => {
 
 //likePost
 export const likePost = async (req, res) => {
+  console.log("In like post function");
   try {
     console.log("in like unlike function");
     const userId = req.user._id;
@@ -81,10 +84,10 @@ export const likePost = async (req, res) => {
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       await TwitterUser.updateOne(
         { _id: userId },
-        { $pull: { likedPost: postId } },
+        { $pull: { likedPost: postId } }
       );
       const updatedLikes = post.likes.filter(
-        (id) => id.toString() !== userId.toString(),
+        (id) => id.toString() !== userId.toString()
       );
       res.status(200).json(updatedLikes);
     } else {
@@ -93,7 +96,7 @@ export const likePost = async (req, res) => {
       post.likes.push(userId);
       await TwitterUser.updateOne(
         { _id: userId },
-        { $push: { likedPost: postId } },
+        { $push: { likedPost: postId } }
       );
       await post.save();
       console.log("did it");
@@ -106,11 +109,12 @@ export const likePost = async (req, res) => {
       const updatedLikes = post.likes;
       res.status(200).json(updatedLikes);
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 //commentPost
 export const commentPost = async (req, res) => {
+  console.log("In comment function");
   try {
     const { text } = req.body;
     const postId = req.params.id;
@@ -134,8 +138,8 @@ export const commentPost = async (req, res) => {
 //get all posts
 //learn more about populate
 export const getPosts = async (req, res) => {
+  console.log("In getposts function");
   try {
-    console.log("funciton executed");
     const posts = await Post.find()
       .sort({
         //will sort based on created time
@@ -164,6 +168,7 @@ export const getPosts = async (req, res) => {
   }
 };
 export const getLiked = async (req, res) => {
+  console.log("In get likes function");
   const userId = req.params.id;
   try {
     const user = await TwitterUser.findById(userId);
@@ -190,6 +195,7 @@ export const getLiked = async (req, res) => {
 };
 
 export const followPost = async (req, res) => {
+  console.log("In following posts function");
   try {
     const userId = req.user._id;
     const user = await TwitterUser.findById(userId);
@@ -214,6 +220,7 @@ export const followPost = async (req, res) => {
   }
 };
 export const allPost = async (req, res) => {
+  console.log("In allPost function");
   try {
     const { username } = req.params;
     const user = await TwitterUser.findOne({ username });
